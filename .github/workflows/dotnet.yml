@@ -32,22 +32,16 @@ jobs:
     - name: Publish
       run: dotnet publish ./MyWebApi/MyWebApi.csproj --self-contained false --configuration Release --no-build --output ./release
 
-    - name: Zip on ubuntu
+    - name: Zip
       run: |
         if [[ ${{ matrix.os }} == "ubuntu-latest" ]]; then
           rm -f release_${{ matrix.os }}.zip
           cd ./release
           zip -r ../release_${{ matrix.os }}.zip .
-        fi          
-      shell: bash
-      
-    - name: Zip on windows
-      run: |
-        if [[ ${{ matrix.os }} == "windows-latest" ]]; then
+        else
           del release_${{ matrix.os }}.zip 2>$null
           Compress-Archive -Path ./release/* -DestinationPath release_${{ matrix.os }}.zip -Force
-        fi
-      shell: powershell
+        fi      
 
     - name: Create Release
       id: create_release
