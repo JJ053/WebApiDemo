@@ -34,9 +34,14 @@ jobs:
 
     - name: Zip
       run: |
-        rm -f release_${{ matrix.os }}.zip
-        cd ./release
-        zip -r ../release_${{ matrix.os }}.zip .
+        if [[ ${{ matrix.os }} == "ubuntu-latest" ]]; then
+          rm -f release_${{ matrix.os }}.zip
+          cd ./release
+          zip -r ../release_${{ matrix.os }}.zip .
+        else
+          del /f release_${{ matrix.os }}.zip
+          Compress-Archive -Path ./release/* -DestinationPath release_${{ matrix.os }}.zip -Force
+        fi
       shell: bash
 
     - name: Create Release
@@ -58,5 +63,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./release_${{ matrix.os }}.zip
-        asset_name: ${{ steps.tag.outputs.tag }}_release_${{ matrix.os }}.zip
+        asset_name: ${{ github.ref_name }}_${{ runner.arch }}_${{ runner.os }}.zip
         asset_content_type: application/zip
