@@ -20,13 +20,13 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --self-contained false --configuration Release --no-restore
 
     - name: Test
-      run: dotnet test --configuration Release --no-build --verbosity normal
+      run: dotnet test ./MyWebApi.Tests/MyWebApi.Tests.csproj --configuration Release --no-build --verbosity normal
 
     - name: Publish
-      run: dotnet publish --configuration Release --no-build --output ./release
+      run: dotnet publish ./MyWebApi/MyWebApi.csproj --self-contained false --configuration Release --no-build --output ./release
 
     - name: Zip
       run: |
