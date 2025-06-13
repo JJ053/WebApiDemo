@@ -5,7 +5,11 @@ on:
       - 'v*'
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        dotnet-version: ['9.0.x']
 
     steps:
     - name: Checkout source
@@ -14,7 +18,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: ${{ matrix.dotnet-version }}
 
     - name: Restore dependencies
       run: dotnet restore
@@ -30,9 +34,9 @@ jobs:
 
     - name: Zip
       run: |
-        rm -f release.zip
+        rm -f release_${{ matrix.os }}.zip
         cd ./release
-        zip -r ../release.zip .
+        zip -r ../release_${{ matrix.os }}.zip .
       shell: bash
 
     - name: Create Release
@@ -53,6 +57,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./release.zip
-        asset_name: release_${{ steps.tag.outputs.tag }}.zip
+        asset_path: ./release_${{ matrix.os }}.zip
+        asset_name: ${{ steps.tag.outputs.tag }}_release_${{ matrix.os }}.zip
         asset_content_type: application/zip
