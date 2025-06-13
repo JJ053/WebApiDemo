@@ -44,7 +44,7 @@ jobs:
     - name: Zip(Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        del release_${{ matrix.os }}.zip 2 > $null
+        del release_${{ matrix.os }}.zip 2>$null
         cd ./release
         Compress-Archive -Path * -DestinationPath ../release_${{ matrix.os }}.zip -Force
         cd ..
